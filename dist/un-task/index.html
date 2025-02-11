@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Word Builders</title>
+
+        <style>
+            body {
+                font-family: system-ui, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+                background-color: #eeeeee;
+                color: #454545;
+                font-size: 18px;
+                line-height: 1.4;
+                margin: 2em auto;
+                max-width: 800px;
+            }
+
+            main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            img {
+                height: auto;
+                width: 100%;
+                max-width: 800px;
+            }
+
+
+            .line {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                gap: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <p>Your seed is: <span id="seed-output"></span></p>
+            <button id="begin-button">Begin</button>
+        </main>
+
+        <script>
+            window.loadIndex = (index) => {
+                let imageBaseName;
+                if (index === 0) {
+                    imageBaseName = 'intro';
+                } else if (index > 0 && index <= window.seed.length * 2) {
+                    imageBaseName = `${window.seed[Math.floor((index - 1) / 2)]}${(index - 1) % 2}`;
+                }
+
+                if (imageBaseName == null) {
+                    alert(`Tried to load index ${index}, which is not in range (0 - ${window.seed.length})`)
+                } else {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = `images/${imageBaseName}.jpg`;
+
+                    const navElements = [];
+
+                    if (index > 0) {
+                        let prevElement = document.createElement('button');
+                        prevElement.innerText = 'Previous';
+                        prevElement.onclick = () => { window.loadIndex(index - 1) };
+
+                        navElements.push(prevElement);
+                    }
+
+                    if (index < window.seed.length * 2) {
+                        let nextElement = document.createElement('button');
+                        nextElement.innerText = 'Next';
+                        nextElement.onclick = () => { window.loadIndex(index + 1) };
+
+                        navElements.push(nextElement);
+                    }
+
+                    const navElement = document.createElement('div');
+                    navElement.className = 'line';
+                    navElements.forEach((element) => navElement.appendChild(element));
+
+                    document.getElementsByTagName('main')[0].replaceChildren(imgElement, navElement);
+                }
+            }
+
+            document.getElementById('begin-button').onclick = () => {
+                window.loadIndex(0);
+            };
+
+            window.seed = 'abcdefghijklmnopqrst'
+                .split('')
+                .map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value)
+                .join('');
+
+            document.getElementById('seed-output').innerText = window.seed
+        </script>
+    </body>
+</html>
